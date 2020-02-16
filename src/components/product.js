@@ -8,10 +8,11 @@ export default class Product extends Component {
         this.state = {
             cats: [],
             products:[],
-            viewcount:25,
+            viewcount:5,
             currentcatid:0,
             ischeckall:false,
             items:[]
+            
         }
     }
 
@@ -27,7 +28,7 @@ export default class Product extends Component {
 
     getProductFromCat = (e)=>{
         let id = e.target.id;
-        let viewcount =   this.state.currentcatid !==0 ? this.state.viewcount : 25;
+        let viewcount =   this.state.currentcatid !==0 ? this.state.viewcount : 5;
         axios.post('http://localhost:3000/api/getproduct',{catid:id,perpage:viewcount})
         .then(res=>{
             res.data.map(product=>product.isSelect = false);
@@ -40,71 +41,92 @@ export default class Product extends Component {
         
     }
     checkAll(e){
-        let {products,ischeckall} = this.state;
+        let {products,items} = this.state;
         if(e.target.checked){
-            products.map(product=>product.isSelect = true);
+            
+            items = products.map(p=>p.id);
         }
         else{
-            products.map(product=>product.isSelect = false);
+            items = [];
         }
        
-        this.setState({ischeckall:e.target.checked,products:products})
+        this.setState({ischeckall:e.target.checked,items:items})
     }
     Check(e){
-        let id = e.target.id;
-        
-        let {products,items} = this.state;
-        
-        let i = products.findIndex(p=> p.id==id);
-        let itemtopush = []
-        products[i].isSelect = !products[i].isSelect;
-        if(e.target.checked){
-            itemtopush = [products[i].id,...itemtopush]
-        }
-        else{
+        let {id,checked} = e.target;      
+        let {items,products} = this.state;
 
-            let ir = itemtopush.findIndex(products[i].id);
-            itemtopush.slice(ir,1);
+        if(checked){
+           
+            
+                this.setState({items:[...items,parseInt(id)]})
+                if(products.length-items.length===1) {
+                    this.setState({ischeckall:true})
+                }
+
+        }else{
+            items = items.filter(iid=>iid!==parseInt(id));
+            this.setState({items:items,ischeckall:false});
+            
         }
-        this.setState({products:products,ischeckall:false,items:itemtopush});
+
+    }
+    getVariation(){
+        let {items} = this.state;
+        
+        axios.post('http://localhost:3000/api/insertproduct',{products:items})
+        .then(res=>{
+            
+            console.log(res.data);
+        })
+
     }
     render(){
         
         return(
             <div>
             <div>
+                <ul id="listCat">
                 {
                     this.state.cats.length>0 && this.state.cats.map((cat)=>
-                        <p key={cat.id} id={cat.id} onClick={this.getProductFromCat.bind(this)}>{cat.name}</p>
+                        <li key={cat.id} className={cat.id.toString()===this.state.currentcatid?'caton':''} id={cat.id} onClick={this.getProductFromCat.bind(this)}>{cat.name}</li>
                     )
                 }
+                </ul>               
             </div>
-            <div>
+            <div id="topoption">
                 <label >Hiển thị sản phẩm: 
                 <select id="numbershow" onChange={this.setViewCount.bind(this)}>
+                <option value="5">5</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
                     <option value="100">100</option>
                 </select>
                 </label>
                 
+                <button className="btn btn-success" onClick={this.getVariation.bind(this)}>Múc</button>
             </div>
-            <table className="table table-scripped">
-                <tbody>
+            <table className="table table-striped table-hover table-bordered">
+                <thead className="thead-dark">
                     <tr>
                         <th>#</th>
                         <th>Tên</th>
-                        <td>Giá</td>
-                        <th><input type="checkbox" checked={this.state.ischeckall} onChange={this.checkAll.bind(this)}></input></th>
+                        <th>Danh mục</th>
+                        <th>SKU</th>
+                        <th> <input type="checkbox" checked={this.state.ischeckall} onChange={this.checkAll.bind(this)}></input> Chọn hết</th>
                     </tr>
+                </thead>
+                <tbody>
+                
                 {
                     this.state.products.length>0 && this.state.products.map((product,index)=>
 
                     <tr key={index}>
                         <td>{index+1}</td>
                         <td><a href={product.permalink}  id={product.id}>{product.name}</a></td>
-                        <td>{product.price}</td>
-                        <td><input type="checkbox" id={product.id} checked={product.isSelect} onChange={(e)=>this.Check(e)}></input></td>
+                        <td>{product.categories.map(c=>c.name).join(' / ')}</td>
+                        <td><input type="text" className="form-control" defaultValue={product.sku}></input></td>
+                        <td><input type="checkbox" id={product.id} checked={this.state.items.includes(product.id)} onChange={(e)=>this.Check(e)}></input></td>
                     </tr>
                     
                 )
