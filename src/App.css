@@ -1,8 +1,15 @@
 
 #topoption{
     display: flex;
-    justify-content:space-between;
+    justify-content:flex-start;
     margin-bottom: 15px;
+}
+#topoption label{
+    margin: 0;
+    line-height: 36px;
+}
+#topoption .btn{
+    margin-left: 7px;
 }
 .btn{
     border-radius: 0 !important;
@@ -31,3 +38,113 @@
     background: #fff;
     color:#444;
 }
+.hiddenbackground{
+    position: fixed;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(255, 255, 255, .8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.cspin{
+    position:absolute;
+    width:10px;
+    height:10px;
+    background-color:#333;
+    border-radius:50%;
+  }
+  .spin{
+    position:relative;
+    width:50px;
+    height:50px;
+    background:transparent;
+    border-radius:50%;
+    animation:spin 2s linear infinite;
+  }
+  @keyframes spin{
+    
+    100%{
+      transform:rotate(360deg);
+    }
+  }
+  .ul-table{
+      font-size: 13px;
+      vertical-align: middle;
+  }
+  .ul-table{
+      list-style-type: none;
+      padding: 0;
+      border-bottom: 1px solid #e1e1e1;
+      align-items: center;
+      position: relative;
+      margin: 0;
+      
+  }
+  .table-header{
+      background-color: #204051;
+      color: #cae8d5;
+      border-bottom: 1px solid #3b6978;
+  }
+  .ul-table li{
+      
+   padding: 10px;
+   display: inline-block;
+   width: 25%;
+  }
+  [type="checkbox"]
+{
+    vertical-align:middle;
+}
+.dst-select{
+    padding: 3px 5px;
+    font-size: 13px;
+    background: #fff;
+    outline: none;
+    border: 1px solid #3b6978;
+}
+  .btn.btn-suc{
+      background: #204051;
+      color: #cae8d5;
+      outline: none;
+      padding: 5px 12px;
+  }
+  .btn.btn-change{
+    background: #3b6978;
+    color: #cae8d5;
+    outline: none;
+    padding: 5px 12px;
+}
+  .ul-table  .subrow{
+     height: 0;
+     overflow: hidden;
+     
+  }
+  .subrow.show{
+      
+      animation: show   .5s;
+      height: auto;
+  }
+  @keyframes show{
+      from{
+          height: 0;
+          opacity: 0;
+      }
+      to{
+        height: auto;
+        opacity: 1;
+      }
+      
+  }
+  .expandrow{
+      display: grid;
+      grid-template-columns: repeat(4,25%);
+      text-align: left;
+      border-bottom: 1px solid #e1e1e1;
+      padding: 7px;
+  }
+  .expandrow span input[type='text']{
+
+    padding: 3px;
+  }
