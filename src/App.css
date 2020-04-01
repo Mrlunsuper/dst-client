@@ -1,4 +1,9 @@
-
+html, body {
+    height: 100%;
+}
+p,li,span{
+    font-size: 13px;
+}
 #topoption{
     display: flex;
     justify-content:flex-start;
@@ -13,6 +18,15 @@
 }
 .btn{
     border-radius: 0 !important;
+}
+.btn.btn-search{
+    background-color: aquamarine;
+    color: #fff;
+}
+#topoption input[type="text"]{
+    margin-left: 7px;
+    padding: 0px 7px;
+    font-size: 13px;
 }
 #listCat{
     list-style-type: none;
@@ -97,6 +111,12 @@
 {
     vertical-align:middle;
 }
+.table td{
+    font-size:13px;
+}
+.table th{
+    font-size: 15px;
+}
 .dst-select{
     padding: 3px 5px;
     font-size: 13px;
@@ -148,3 +168,129 @@
 
     padding: 3px;
   }
+  .searchresult{
+     
+      list-style-type: none;
+      padding: 0;
+      
+  }
+  .searchresult li{
+      text-align: left;
+      border-bottom: 1px solid #eaeaea;
+      padding: 7px 0px;
+      cursor: pointer;
+      color: #ff2e63;
+      font-size: 13px;
+  }
+  .searchresult li.added{
+      background: #252a34;
+      color: #08d9d6;
+  }
+  .wraplist{
+    width: 100%;
+    padding: 30px;
+    height: 100%;
+    background: #fff;
+  }
+  .login-container{
+      background: url(./images/loginbackground.jpg);
+      width: 100%;
+      height: 100vh;
+      background-size: cover;
+      position: relative;
+  }
+  .loginform{
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, .7);
+    padding: 10px 15px 50px 15px;
+    border-top: 5px solid #204051;
+  }
+  .timer{
+    position: absolute;
+    font-size: 40px;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgb(255, 255, 255);
+    /* padding: 10px 15px 50px 15px; */
+   
+  }
+  .loginform input{
+      border: none;
+      background: transparent;
+      outline: none;
+  }
+  .custom-input{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #204051;
+      padding: 7px 0px;
+      margin: 10px 0px;
+  }
+  .custom-input input{
+      width: 80%;
+      font-size: 14px;
+  }
+  .custom-input img{
+      width: 7%;
+  }
+  .logo{
+      margin: 30px 0px;
+  }
+  .err{
+      background: #eb3562;
+      color: #fff;
+      margin: 7px 0px;
+      padding: 3px 5px;
+      animation: showerr linear 2s;
+      opacity: 1;
+  }
+
+  @keyframes showerr{
+      0%{
+        opacity: 1;
+      }
+      100%{
+          opacity: 0;
+      }
+  }
+.user-screen .custom-input {
+    background-color: #3b6978;
+    padding: 0;
+    border: 1px solid #204051;
+}
+.user-screen .custom-input select,.user-screen .custom-input input{
+    width: 70%;
+    background: #fff;
+    outline: none;
+    border: none;
+    height: 30px;
+    padding: 0px 6px;
+}
+.user-screen .custom-input span{
+    color: #fff;
+    font-weight: 600;
+    padding: 0px 7px;
+}
+.homepage{
+    background: url('./images/homeBg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100vh;
+    
+}
+.homepage .sidebar-left{
+    background: rgba(255, 255, 255, .8);
+    color: #fff;
+    position: absolute;
+    left: 30px;
+    padding: 30px;
+    top: 50%;
+    transform: translatey(-50%);
+    border-radius: 4px;
+}

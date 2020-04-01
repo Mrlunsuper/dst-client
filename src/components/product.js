@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import axios from "axios";
-// import ExpandRow from './expandrow';
+import axios from "./axiosService";
+
+
 export default class Product extends Component {
   constructor(props) {
     super(props);
@@ -14,31 +15,37 @@ export default class Product extends Component {
       ncat: [],
       isloading: false,
       vats: [],
-      showall:false
+      showall:false,
+      searchField:'',
+      searchResult:[]
     };
+    this.API_URL = 'http://localhost:3000/api/';
     this.onSkuChange = this.onSkuChange.bind(this);
     this.Check = this.Check.bind(this);
     this.handleCatChange = this.handleCatChange.bind(this);
     this.changeLimit = this.changeLimit.bind(this);
   }
+  componentWillMount(){
+    let token = localStorage.getItem('token');
+    axios.setHeader('Authorization',`Bearer ${token}`);
+  }
 
   changeLimit(){
-    this.setState({showall:!this.state.showall});
-    this.getProductFromCat({target: { id: this.state.currentcatid }},this.state.currentcatid)
+    this.setState({showall:!this.state.showall},()=>{
+      this.getProductFromCat({target: { id: this.state.currentcatid }},this.state.currentcatid)
+    });
+    
     
   }
 
   componentDidMount() {
-
-    
     this.setState({ isloading: true });
-    fetch("http://localhost:3000/api/getallcat")
-      .then(result => result.json())
+    axios.get(this.API_URL+"getallcat")
       .then(res => {
         
         this.setState({
-          cats: res[0],
-          ncats: res[1],
+          cats: res.data[0],
+          ncats: res.data[1],
           isloading: false
         });
       });
@@ -56,7 +63,7 @@ export default class Product extends Component {
     let { items } = this.state;
     
     axios
-      .post("http://localhost:3000/api/getproduct", {
+      .post(this.API_URL+"getproduct", {
         catid: id,
         perpage: viewcount,
         showall:this.state.showall
@@ -110,12 +117,6 @@ export default class Product extends Component {
     let vaIndex = vat.findIndex(x => x.id.toString() === id.toString());
     vat[vaIndex].sku = value;
     product[indexOfProduct].variations = vat;
-
-    //console.log(id,value)
-    // let {vat} = this.state;
-    // let index = vat.findIndex(x=>x.id.toString()===id.toString());
-    // vat[index].sku = value;
-
     this.setState({
       products: [
         ...product.slice(0, indexOfProduct),
@@ -124,13 +125,31 @@ export default class Product extends Component {
       ]
     });
   }
+  addItems(item){
+    let {products} = this.state;
+    if(products.find(p=>p.id===item.id)){
+      let itemFiltered = products.filter(product=>product.id!==item.id);
+      this.setState({
+        products:itemFiltered
+      })
+    }
+    else{
+      this.setState({
+        products:[
+            item,
+          ...products
+        ]
+      });
+    }
+   
+  }
   Check(e) {
     let { id, checked } = e.target;
     let { items, products } = this.state;
     if (checked) {
       // if(typeof currentProduct[0].variations[0]!=='object'){
       axios
-        .post("http://localhost:3000/api/getvariation", { id: id })
+        .post(this.API_URL+"getvariation", { id: id })
         .then(res => {
           let vat = products;
           let index = vat.findIndex(x => x.id.toString() === id.toString());
@@ -151,12 +170,30 @@ export default class Product extends Component {
       
     }
   }
-
+  closeSearchResult(){
+    this.setState({searchResult:[]});
+  }
+  searchChange(e){
+   if(e.keyCode===13 && this.state.searchField!==''){
+    this.searchSubmit();
+   }
+   else{
+     this.setState({
+      searchField: e.target.value
+    });
+   }
+  }
+  async searchSubmit(){
+    let {searchField} = this.state;
+    this.setState({isloading:true});
+    await axios.post(this.API_URL+"search",{search:searchField})
+    .then(searchResult=>this.setState({searchResult:searchResult.data,isloading:false}));
+  }
   getVariation() {
     let { items } = this.state;
     this.setState({isloading:true});
     axios
-      .post("http://localhost:3000/api/insertproduct", { products: items })
+      .post(this.API_URL+"insertproduct", { products: items })
       .then(res => {
         console.log(res.data);
         this.setState({isloading:false});
@@ -211,12 +248,16 @@ export default class Product extends Component {
             >
               Sync
             </button>
+            <input type="text"
+            placeholder="Nhập tên sản phẩm"
+            value={this.state.searchField} onChange={this.searchChange.bind(this)} onKeyUp={this.searchChange.bind(this)} />
+            <button className="btn btn-search" onClick={this.searchSubmit.bind(this)}>Tìm kiếm</button>
           </div>
         )}
         <ul className="ul-table table-header">
           <li>#</li>
           <li>Tên Sản Phẩm</li>
-          <li>Danh muc</li>
+          <li>Danh Mục</li>
           <li>
             {" "}
             <input
@@ -224,7 +265,7 @@ export default class Product extends Component {
               checked={this.state.ischeckall}
               onChange={this.checkAll.bind(this)}
             ></input>{" "}
-            Chọn hết
+            Chọn
           </li>
         </ul>
         {this.state.products.length > 0 &&
@@ -289,6 +330,27 @@ export default class Product extends Component {
             <img src="/loader.svg" alt="loader" />
           </div>
         )}
+        {
+          this.state.searchResult.length > 0 &&
+          <div className="hiddenbackground">
+            <div className="wraplist">
+            <button onClick={this.closeSearchResult.bind(this)} className="btn btn-suc">Thêm vào danh sách</button>
+            <p>Click vào tên sản phẩm để thêm vào danh sách</p>
+            <ul className="searchresult">
+          
+              
+            {
+              this.state.searchResult.map((product,index)=>
+                <li className={this.state.products.find(p=>p.id===product.id) ? 'added' : ''}
+                onClick={()=>this.addItems(product)} 
+                key={index}>{product.name}</li>
+              )
+            }
+            
+            </ul>
+            </div>
+          </div>
+        }
       </div>
     );
   }
